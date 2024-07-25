@@ -13,24 +13,30 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as EditImport } from './routes/edit'
 
 // Create Virtual Routes
 
+const RegisterLazyImport = createFileRoute('/register')()
+const LoginLazyImport = createFileRoute('/login')()
 const AboutLazyImport = createFileRoute('/about')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
 
+const RegisterLazyRoute = RegisterLazyImport.update({
+  path: '/register',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/register.lazy').then((d) => d.Route))
+
+const LoginLazyRoute = LoginLazyImport.update({
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+
 const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const EditRoute = EditImport.update({
-  path: '/edit',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
@@ -48,18 +54,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
-    '/edit': {
-      id: '/edit'
-      path: '/edit'
-      fullPath: '/edit'
-      preLoaderRoute: typeof EditImport
-      parentRoute: typeof rootRoute
-    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -69,8 +82,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  EditRoute,
   AboutLazyRoute,
+  LoginLazyRoute,
+  RegisterLazyRoute,
 })
 
 /* prettier-ignore-end */
@@ -82,18 +96,22 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.jsx",
       "children": [
         "/",
-        "/edit",
-        "/about"
+        "/about",
+        "/login",
+        "/register"
       ]
     },
     "/": {
       "filePath": "index.lazy.jsx"
     },
-    "/edit": {
-      "filePath": "edit.jsx"
-    },
     "/about": {
       "filePath": "about.lazy.jsx"
+    },
+    "/login": {
+      "filePath": "login.lazy.jsx"
+    },
+    "/register": {
+      "filePath": "register.lazy.jsx"
     }
   }
 }
